@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Compliance Report Generator</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="container">
+<h1>Compliance Report Generator</h1>
+<form id="uploadForm" enctype="multipart/form-data">
+	<input type="file" id="fileInput" name="file" required>
+	<button type="button" id="uploadBtn">Upload & Analyze</button>
+</form>
+<pre id="result"></pre>
+</div>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+	const out = document.getElementById('result');
+	// Show last report from localStorage so output persists across reloads
+	try {
+		const last = localStorage.getItem('last_report');
+		if (last) {
+			out.textContent = last;
+		}
+	} catch (e) {
+		// ignore storage errors
+	}
+
+	document.getElementById('uploadBtn').addEventListener('click', async (e) => {
+		out.textContent = 'Uploading...';
+
+		const fileEl = document.getElementById('fileInput');
+		if (!fileEl.files || fileEl.files.length === 0) {
+			out.textContent = 'No file selected';
+			return;
+		}
+
+		const file = fileEl.files[0];
+		const formData = new FormData();
+		formData.append('file', file);
+
+		// Use same-origin upload URL so page served by Flask posts to the same host
+		// Force uploads to the backend host to avoid 405s when frontend is served
+		// by a different development server (Live Server, etc.). If your backend
+		// runs somewhere else, change this value.
+		const BACKEND_UPLOAD_URL = 'http://127.0.0.1:5000/upload';
+		const url = BACKEND_UPLOAD_URL;
+
+		try {
+			const response = await fetch(url, { method: 'POST', body: formData });
+
+			if (!response.ok) {
+				let errText = `Upload failed: ${response.status} ${response.statusText}`;
+				try {
+					const errJson = await response.json();
+					if (errJson.error) errText = `Error: ${errJson.error}`;
+				} catch (err) {
+					// ignore
+				}
+				out.textContent = errText;
+				try { localStorage.setItem('last_report', errText); } catch (e) {}
+				return;
+			}
+
+			const data = await response.json();
+			let display = '';
+			if (data && data.findings) {
+				let lines = [data.summary || 'Report:'];
+				for (const f of data.findings) {
+					if (f.found) {
+						lines.push(`✔ ${f.rule} — found keyword: '${f.keyword}'`);
+					} else {
+						lines.push(`✖ ${f.rule} — no evidence found`);
+					}
+				}
+				// show saved file diagnostics if present
+				if (data.saved) {
+					lines.push('\nSaved file:');
+					lines.push(`- name: ${data.saved.filename}`);
+					if (data.saved.relative_path) lines.push(`- path: ${data.saved.relative_path}`);
+					if (data.saved.size != null) lines.push(`- size: ${data.saved.size} bytes`);
+					// link to download
+					try {
+						const dl = window.location.origin + '/uploads/' + encodeURIComponent(data.saved.filename);
+						lines.push(`- download: ${dl}`);
+					} catch (e) {}
+				}
+				display = lines.join('\n');
+			} else {
+				display = JSON.stringify(data, null, 2);
+			}
+			out.textContent = display;
+			try { localStorage.setItem('last_report', display); } catch (e) {}
+		} catch (err) {
+			const msg = 'Upload error: ' + err.message;
+			out.textContent = msg;
+			try { localStorage.setItem('last_report', msg); } catch (e) {}
+		}
+	});
+});
+</script>
+</body>
+</html>
