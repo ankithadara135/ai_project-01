@@ -1,0 +1,90 @@
+
+{
+	"Data Minimization": ["collect", "necessary", "limited", "minimize", "only what is needed"],
+	"Data Security": ["encrypt", "secure", "firewall", "access control", "authenticat", "authorization"],
+	"User Consent": ["consent", "agree", "permission", "opt-in", "opt-out", "withdraw"],
+	"Data Storage": ["store", "retain", "database", "retention", "archive"],
+
+	"GDPR": [
+		"gdpr",
+		"general data protection regulation",
+		"data subject",
+		"data controller",
+		"data processor",
+		"right to erasure",
+		"right to be forgotten",
+		"data portability",
+		"lawful basis",
+		"consent",
+		"article 6",
+		"article 5"
+	],
+
+	"CCPA": [
+		"ccpa",
+		"california consumer privacy act",
+		"right to know",
+		"right to delete",
+		"sale of personal information",
+		"do not sell",
+		"service provider"
+	],
+
+	"HIPAA": [
+		"hipaa",
+		"protected health information",
+		"phi",
+		"covered entity",
+		"business associate",
+		"privacy rule",
+		"security rule"
+	],
+
+	"PCI-DSS": [
+		"pci",
+		"pci-dss",
+		"credit card",
+		"cardholder",
+		"payment card",
+		"cvv",
+		"card number",
+		"payment data"
+	],
+
+	"ISO27001": [
+		"iso27001",
+		"iso 27001",
+		"information security management",
+		"isms",
+		"security policy",
+		"risk assessment"
+	],
+
+	"NIST-CSF": [
+		"nist",
+		"csf",
+		"identify",
+		"protect",
+		"detect",
+		"respond",
+		"recover",
+		"framework"
+	],
+
+	"LGPD": [
+		"lgpd",
+		"lei geral de protecao de dados",
+		"data subject",
+		"right to access",
+		"right to deletion"
+	],
+
+	"SOC2": [
+		"soc2",
+		"service organization control",
+		"trust services",
+		"security",
+		"availability",
+		"confidentiality"
+	]
+}
